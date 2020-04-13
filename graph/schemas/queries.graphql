@@ -1,0 +1,4 @@
+type Query {
+  ingredients: [Ingredient!]!
+  ingredient(id: String!): Ingredient!
+}

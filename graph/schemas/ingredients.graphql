@@ -1,0 +1,12 @@
+input IngredientInput {
+  description: String
+  title: String
+  image: String
+}
+
+type Ingredient {
+  id: ID!
+  title: String
+  description: String
+  image: String
+}

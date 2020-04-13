@@ -1,0 +1,6 @@
+scalar Upload
+
+type File {
+  id: ID!
+  name: String!
+}

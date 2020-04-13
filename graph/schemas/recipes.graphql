@@ -1,0 +1,47 @@
+# TODO: Add a comment with each value on how much it is to it's base value
+# TODO: Double check if any of this is uneccesary, might be better to start with a small amount and then work our way up
+enum MeasurementType {
+  # Volume - Base is liter
+  TEASPOON
+  TABLESPOON
+  FLUIDOUNCE
+  GILL
+  CUP
+  PINT
+  QUART
+  MILLILITER
+  CENTERLITER
+  DECILITER
+  LITER
+
+  # Weight - Base is gram
+  POUND
+  OUNCE
+  MILLIGRAM
+  GRAM
+  KILOGRAM
+}
+
+type RecipeIngredient {
+  id: ID!
+  title: String
+  description: String
+  image: String
+  measurementType: MeasurementType
+  measurementValue: Float
+}
+
+type Recipe {
+  id: ID!
+  title: String
+  description: String
+  image: String
+  ingredients: [RecipeIngredient]
+}
+
+input RecipeInput {
+  id: ID!
+}
+input RecipeIngredientInput {
+  id: ID!
+}
