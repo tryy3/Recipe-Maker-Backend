@@ -5,4 +5,4 @@ build:
     - go
 
 run:
-  web: recipe-maker-backend
+  web: Recipe-Maker-Backend

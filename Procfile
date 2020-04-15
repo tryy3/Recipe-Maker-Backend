@@ -1,1 +1,1 @@
-web: bin/recipe-maker-backend
+web: bin/Recipe-Maker-Backend

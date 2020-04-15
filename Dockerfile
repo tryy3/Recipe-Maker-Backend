@@ -18,4 +18,4 @@ ENV HOME /app
 WORKDIR /app
 RUN useradd -m heroku
 USER heroku
-CMD /app/bin/recipe-maker-backend
+CMD /app/bin/Recipe-Maker-Backend
