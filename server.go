@@ -3,11 +3,13 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -39,8 +41,12 @@ func main() {
 		log.Fatal("Unable to read config: ", err)
 	}
 
-	opt := option.WithCredentialsFile("./configs/firebase_auth.json")
-	db, err := firestore.NewClient(context.Background(), "bartender-c26d5", opt)
+	cred, err := readCredentials()
+	if err != nil {
+		log.Fatal("unable to retrieve firestore credentials: ", err)
+	}
+
+	db, err := firestore.NewClient(context.Background(), "bartender-c26d5", *cred)
 	if err != nil {
 		log.Fatal("error connecting to firestore: ", err)
 	}
@@ -102,16 +108,37 @@ type Config struct {
 
 // TODO: Add more configs and maybe redo this into a more proper config solution
 func readConfig() (*Config, error) {
-	f, err := ioutil.ReadFile("configs/config.json")
-	if err != nil {
-		return nil, err
-	}
-
 	conf := Config{}
+
+	f, err := ioutil.ReadFile("./configs/config.json")
+	if err != nil {
+		if strings.Contains(err.Error(), "no such file or directory") {
+			conf.Cloudinary = os.Getenv("cloudinary");
+			if conf.Cloudinary == "" {
+				return nil, errors.New("Unable to find a cloudinary environment setting or config file")
+			}
+		} else {
+		return nil, err
+		}
+	}
 
 	err = json.Unmarshal(f, &conf)
 	if err != nil {
 		return nil, err
 	}
 	return &conf, nil
+}
+
+// TODO: Find a better solution for dokku with service accounts
+func readCredentials() (*option.ClientOption, error) {
+	if _, err := os.Stat("./configs/"); os.IsNotExist(err) {
+		credJSON := os.Getenv("firestore_credentials")
+		if credJSON == "" {
+			return nil, errors.New("Unable to find a firestore credentials environment setting or config file")
+		}
+		cred := option.WithCredentialsJSON([]byte(credJSON))
+		return &cred, nil
+	}
+	cred := option.WithCredentialsFile("./configs/firebase_auth.json")
+	return &cred, nil
 }
