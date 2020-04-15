@@ -136,8 +136,9 @@ func readCredentials() (*option.ClientOption, error) {
 		if credJSON == "" {
 			return nil, errors.New("Unable to find a firestore credentials environment setting or config file")
 		}
-		cred := option.WithCredentialsJSON([]byte(credJSON))
-		return &cred, nil
+		return nil, errors.New(credJSON)
+		//cred := option.WithCredentialsJSON([]byte(credJSON))
+		//return &cred, nil
 	}
 	cred := option.WithCredentialsFile("./configs/firebase_auth.json")
 	return &cred, nil
