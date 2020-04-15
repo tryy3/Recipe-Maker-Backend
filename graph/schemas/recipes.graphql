@@ -40,7 +40,8 @@ type Recipe {
 }
 
 input RecipeInput {
-  id: ID!
+  title: String
+  description: String
 }
 input RecipeIngredientInput {
   id: ID!

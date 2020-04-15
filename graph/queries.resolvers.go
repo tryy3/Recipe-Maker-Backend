@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/tryy3/Recipe-Maker-Backend/graph/generated"
 	"github.com/tryy3/Recipe-Maker-Backend/graph/model"
@@ -56,6 +57,29 @@ func (r *queryResolver) Ingredient(ctx context.Context, id string) (*model.Ingre
 	}
 
 	return &ingredient, nil
+}
+
+func (r *queryResolver) Recipes(ctx context.Context) ([]*model.Recipe, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) Recipe(ctx context.Context, id string) (*model.Recipe, error) {
+	doc := r.Database.Doc("recipes/" + id)
+	snap, err := doc.Get(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	recipe := model.Recipe{
+		ID: doc.ID,
+	}
+
+	err = snap.DataTo(&recipe)
+	if err != nil {
+		return nil, err
+	}
+
+	return &recipe, nil
 }
 
 // Query returns generated.QueryResolver implementation.

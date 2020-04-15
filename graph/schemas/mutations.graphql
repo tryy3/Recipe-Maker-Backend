@@ -3,10 +3,11 @@ type Mutation {
   createIngredient(ingredient: IngredientInput!): Ingredient!
   deleteIngredient(id: ID!): Boolean!
 
-  updateRecipe(id: ID!, Recipe: RecipeInput!): Recipe!
-  createRecipe(Recipe: RecipeInput!): Recipe!
+  updateRecipe(id: ID!, recipe: RecipeInput!): Recipe!
+  createRecipe(recipe: RecipeInput!): Recipe!
   deleteRecipe(id: ID!): Boolean!
-  addRecipeIngredient(id: ID!, Ingredient: RecipeIngredientInput!): Recipe!
+  addRecipeIngredient(recipeID: ID!, ingredientID: ID!): Recipe!
+  removeRecipeIngredient(recipeID: ID!, ingredientID: ID!): Recipe!
 
   uploadFiles(files: [Upload!]!): [File!]!
 }

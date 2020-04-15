@@ -48,7 +48,8 @@ type RecipeIngredientInput struct {
 }
 
 type RecipeInput struct {
-	ID string `json:"id"`
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
 }
 
 type MeasurementType string

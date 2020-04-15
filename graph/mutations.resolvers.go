@@ -107,14 +107,92 @@ func (r *mutationResolver) UpdateRecipe(ctx context.Context, id string, recipe m
 }
 
 func (r *mutationResolver) CreateRecipe(ctx context.Context, recipe model.RecipeInput) (*model.Recipe, error) {
-	panic(fmt.Errorf("not implemented"))
+	col := r.Database.Collection("recipes")
+
+	var data map[string]interface{}
+	dataJSON, err := json.Marshal(recipe)
+	if err != nil {
+		return nil, err
+	}
+	json.Unmarshal(dataJSON, &data)
+
+	// Remove nil values from map
+	for key, v := range data {
+		if v == nil {
+			delete(data, key)
+		}
+	}
+
+	doc, _, err := col.Add(context.Background(), data)
+	if err != nil {
+		return nil, err
+	}
+
+	snap, err := doc.Get(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	recipeModel := model.Recipe{
+		ID: doc.ID,
+	}
+
+	err = snap.DataTo(&recipeModel)
+	if err != nil {
+		return nil, err
+	}
+
+	return &recipeModel, nil
 }
 
 func (r *mutationResolver) DeleteRecipe(ctx context.Context, id string) (bool, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *mutationResolver) AddRecipeIngredient(ctx context.Context, id string, ingredient model.RecipeIngredientInput) (*model.Recipe, error) {
+func (r *mutationResolver) AddRecipeIngredient(ctx context.Context, recipeID string, ingredientID string) (*model.Recipe, error) {
+	var recipe *model.Recipe
+	recipeDoc := r.Database.Doc("recipes/" + recipeID)
+	ingredientDoc := r.Database.Doc("ingredients/" + ingredientID)
+
+	err := r.Database.RunTransaction(context.Background(), func(ctx context.Context, tx *firestore.Transaction) error {
+		recipeSnap, err := tx.Get(recipeDoc)
+		if err != nil {
+			return err
+		}
+
+		ingredientSnap, err := tx.Get(ingredientDoc)
+		if err != nil {
+			return err
+		}
+
+		recipe := model.Recipe{
+			ID: recipeID,
+		}
+		err = recipeSnap.DataTo(&recipe)
+		if err != nil {
+			return err
+		}
+
+		ingredient := model.Ingredient{
+			ID: ingredientID,
+		}
+		err = ingredientSnap.DataTo(&ingredient)
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("%#v\n", recipe.Ingredients)
+		fmt.Printf("%#v\n", len(recipe.Ingredients))
+
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return recipe, nil
+}
+
+func (r *mutationResolver) RemoveRecipeIngredient(ctx context.Context, recipeID string, ingredientID string) (*model.Recipe, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 

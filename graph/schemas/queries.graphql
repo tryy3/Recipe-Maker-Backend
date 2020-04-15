@@ -1,4 +1,7 @@
 type Query {
   ingredients: [Ingredient!]!
   ingredient(id: String!): Ingredient!
+
+  recipes: [Recipe!]!
+  recipe(id: String!): Recipe!
 }
