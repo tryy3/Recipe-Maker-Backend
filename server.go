@@ -9,7 +9,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -38,7 +37,7 @@ func main() {
 
 	conf, err := readConfig()
 	if err != nil {
-		log.Fatal("Unable to read config: ", err)
+		log.Fatal("unable to read config: ", err)
 	}
 
 	cred, err := readCredentials()
@@ -103,23 +102,23 @@ func main() {
 }
 
 type Config struct {
-	Cloudinary string `json:cloudinary`
+	Cloudinary string
 }
 
 // TODO: Add more configs and maybe redo this into a more proper config solution
 func readConfig() (*Config, error) {
 	conf := Config{}
-
-	f, err := ioutil.ReadFile("./configs/config.json")
-	if err != nil {
-		if strings.Contains(err.Error(), "no such file or directory") {
+	
+	if _, err := os.Stat("./configs/"); os.IsNotExist(err) {
 			conf.Cloudinary = os.Getenv("cloudinary");
 			if conf.Cloudinary == "" {
 				return nil, errors.New("Unable to find a cloudinary environment setting or config file")
 			}
-		} else {
-		return nil, err
 		}
+
+	f, err := ioutil.ReadFile("./configs/config.json")
+	if err != nil {
+		return nil, err
 	}
 
 	err = json.Unmarshal(f, &conf)
